@@ -43,6 +43,8 @@ class PhoneInputState extends State<PhoneInput>{
 
       phoneNumber = countryCode + firstPart + secondPart + thirdPart;
       User.getInstance().setPhone = phoneNumber;
+	    User.getInstance().setFirstName = firstName;
+      User.getInstance().setLastName = lastName;
       widget._showOverlay();
      
     }
@@ -56,8 +58,8 @@ class PhoneInputState extends State<PhoneInput>{
     firstPart = '';
     secondPart = '';
     thirdPart = '';
-	firstName = '';
-	lastName = '';
+	  firstName = '';
+	  lastName = '';
     firstPartNumberControl.addListener((){
       if(firstPartNumberControl.text.length == 3){ FocusScope.of(context).requestFocus(secondInputNode);}
     });

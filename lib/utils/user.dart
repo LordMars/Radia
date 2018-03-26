@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
+import 'dart:convert';
 
 class User{
   static User _user;
@@ -56,9 +57,10 @@ class User{
     bool success = false;
 
     try{
-      await http.post(uri, body: {"phone": this._phone}).then((response){
-        
+      await http.post(uri, body: {"phone": this._phone, "firstName":this._firstName, "lastName":this._lastName})
+	  .then((response){
         if(response.statusCode == 200){
+		  this._uid = JSON.decode(response.body)['uid'];
           result = 'Sending Confirmation Text';
           success = true;
         }
@@ -91,7 +93,7 @@ class User{
     bool success = false;
 
     try{
-      await http.post(uri, body: {"radiaCode":this._confirmationCode,"phone": this._phone}).then((response){
+      await http.post(uri, body: {"radiaCode":this._confirmationCode,"uid": this._uid}).then((response){
         
         if(response.statusCode == 200){
           result = 'Code Confirmed!';
