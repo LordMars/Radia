@@ -9,11 +9,15 @@ const client = new twilio(accountSid, authToken);
 const twilioNumber = '+14696601142';
 
 exports.sendConfirmationCode = functions.https.onRequest((req, res) => {
-    if(!req.body.phone){
+
+    if(!req.body.phone || !req.body.firstName || !req.body.lastName){
         return res.status(422).send({ error: 'Bad Input' });
     }
 
     const phone = String(req.body.phone);
+  	const firstName = String(req.body.firstName);
+  	const lastName = String(req.body.lastName);
+
     if(!/^\+?[1-9]\d{1,14}$/.test(phone)){
         return res.status(422).send({ error: 'Invalid Number' });
     }
@@ -26,40 +30,48 @@ exports.sendConfirmationCode = functions.https.onRequest((req, res) => {
     }
 
     return client.messages.create(textMessage).then((val) => {
-        admin.database().ref(`/users/${phone}/status`).set("verifying");
-        admin.database().ref(`/users/${phone}/code`).set(code);
-        return res.status(200).send({body: 'Success'});
+      	var uid = admin.database().ref('/users').push();
+      	uid.set({
+        	'phone':phone,
+          	'fistName':firstName,
+          	'lastName':lastName,
+          	'code':code,
+          	'status':'verifying'
+        });
+
+        return res.status(200).send({uid: uid.key});
     }).catch((err) =>{
         return res.status(422).send({err: err});
-    });    
+    });
 });
 
-
-
 exports.verifyUserCode = functions.https.onRequest((req, res) => {
+
     if(!req.body.radiaCode){
         return res.status(422).send({ error: 'Bad Input' });
     }
 
     const code = String(req.body.radiaCode);
-    const phone = String(req.body.phone);
+    const uid = String(req.body.uid);
 
-    return admin.database().ref(`/users/${phone}`).child('code').once('value').then((snapshot) =>{
+    return admin.database().ref(`/users/${uid}`).child('code').once('value').then((snapshot) =>{
         if(parseInt(code) === parseInt(snapshot.val())){
-            return admin.auth().createUser({uid: phone});
+            return admin.auth().createUser({uid: uid});
         }
         else{
             return Promise.resolve(null);
         }
     }).then((user) => {
         if(user !== null){
-            admin.database().ref(`/users/${phone}/code`).remove();
-            admin.database().ref(`/users/${phone}/status`).set('verified');
-            return res.send(user);
+            admin.database().ref(`/users/${uid}/code`).remove();
+            admin.database().ref(`/users/${uid}/status`).set('verified');
+            return res.send({'uid':uid});
         }
         else{
             return res.status(422).send({error: 'Invalid Code'});
         }
     }).catch((err) => { return res.status(422).send({error: err}) });
 });
+
+
 
