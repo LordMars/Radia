@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../utils/user.dart';
 
 class PhoneInput extends StatefulWidget{
@@ -11,13 +12,15 @@ class PhoneInput extends StatefulWidget{
 
 class PhoneInputState extends State<PhoneInput>{
 
+  //Strings to be combined into final phonenumber
+  String phoneNumber, countryCode, firstPart, secondPart, thirdPart;
+  String firstName, lastName;
+
   //Key giving the Form a unique identifier
   final formKey = new GlobalKey<FormState>();
 
-  //Strings to be combined into final phonenumber
-  String phoneNumber, countryCode, firstPart, secondPart, thirdPart;
-
-  User user;
+  //User Instance
+  final User user = User.getInstance();
 
    /* Allows for keyboard focus to be programmatically switched
    * to a specific widget
@@ -49,11 +52,12 @@ class PhoneInputState extends State<PhoneInput>{
   @override
   void initState(){
     super.initState();
-    user = User.getInstance();
     countryCode = '+1';
     firstPart = '';
     secondPart = '';
     thirdPart = '';
+	firstName = '';
+	lastName = '';
     firstPartNumberControl.addListener((){
       if(firstPartNumberControl.text.length == 3){ FocusScope.of(context).requestFocus(secondInputNode);}
     });
@@ -78,6 +82,39 @@ class PhoneInputState extends State<PhoneInput>{
       child: new Column(
         children: <Widget>[
           new Padding(padding: new EdgeInsets.symmetric(vertical: 10.0),),
+		  new Container(
+            child: new Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                new Padding(padding: new EdgeInsets.symmetric(horizontal: 5.0),),
+                new Expanded(
+                  child:new TextFormField(
+                    decoration: new InputDecoration(hintText: 'John', labelText: "First Name"),
+                    keyboardType: TextInputType.text,
+                    validator: (val) => (val.length == 0) ? "Invalid" : null,
+                    onSaved: (val) => firstName = val,
+                    inputFormatters: [
+                      new LengthLimitingTextInputFormatter(25)
+                    ],
+                  ),
+                ),
+                new Padding(padding: new EdgeInsets.only(left: 5.0),),
+                new Expanded(
+                  child:new TextFormField(
+                    decoration: new InputDecoration(hintText: 'Smith', labelText: "Last Name"),
+                    keyboardType: TextInputType.text,
+                    validator: (val) => (val.length == 0) ? "Invalid" : null,
+                    onSaved: (val) => lastName = val,
+                    inputFormatters: [
+                      new LengthLimitingTextInputFormatter(25)
+                    ],
+                  ),
+                ),
+                new Padding(padding: new EdgeInsets.symmetric(horizontal: 5.0),),
+              ],
+            ),
+          ),
+		  new Padding(padding: new EdgeInsets.symmetric(vertical: 5.0),),
           new Container(
               child: new Row(
                 mainAxisAlignment: MainAxisAlignment.center,
