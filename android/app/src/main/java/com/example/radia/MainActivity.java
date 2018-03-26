@@ -1,4 +1,4 @@
-package com.example.radia;
+package com.radia.radia;
 
 import android.os.Bundle;
 
