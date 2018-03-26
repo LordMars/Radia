@@ -7,41 +7,44 @@ class User{
   String _phone;
   String _status;
   String _confirmationCode;
+  String _firstName;
+  String _lastName;
+  String _uid;
 
-  User.privArgs(phone, status){
-    this._phone = phone;
-    this._status = status;
-    this._confirmationCode = '';
-  }
 
-  User.privInit(){
+  User(){
    this._phone = '';
    this._status = '';
    this._confirmationCode = '';
+   this._firstName = '';
+   this._lastName = '';
+   this._uid = '';
   }
 
 
   static User getInstance(){
     if(_user == null){
-      _user = new User.privInit();
+      _user = new User();
     }
     return _user;
   }
 
- static User createInstance(String phone, String status){
-   if(_user == null){
-      _user = new User.privArgs(phone, status);
-    }
-    return _user;
- }
 
  String get phone => this._phone;
  set setPhone(phone){ this._phone = phone;}
 
  String get status => this._status;
  set setStatus(status){ this._status = status;}
+ 
+ String get firstName => this._firstName;
+ set setFirstName(firstName){ this._firstName = firstName;}
+
+ String get lastName => this._lastName;
+ set setLastName(lastName){ this._lastName = lastName;}
 
  set setCode(code){ this._confirmationCode = code;}
+ 
+ String get uid => this._uid;
 
  /* Attempts to post user's phone number to
   * cloud function. Receives a success or
