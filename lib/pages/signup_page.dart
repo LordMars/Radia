@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './landing_page.dart';
+import './main_page.dart';
 import '../ui/code_input.dart';
 import '../ui/phone_input.dart';
 import '../ui/loading_overlay.dart';
@@ -42,7 +42,7 @@ class SignupPageState extends State<SignupPage>{
         if(success){
           hideOverlay();
           Navigator.of(context).pushAndRemoveUntil(
-            new MaterialPageRoute(builder: (context) => new LandingPage()), 
+            new MaterialPageRoute(builder: (context) => new HomePage()), 
             (Route route) => route == null);
         }
       });
