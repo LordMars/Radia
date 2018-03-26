@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "21220570862",
+    "firebase_url": "https://radia-personal-build.firebaseio.com",
+    "project_id": "radia-personal-build",
+    "storage_bucket": "radia-personal-build.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:21220570862:android:21efafaf229a3e37",
+        "android_client_info": {
+          "package_name": "com.radia.radia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "21220570862-v1o7jd3j9p1tj5psddnlsq12m47aqmo2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4OvAXpWnGjQp7XHdKq9oI8pKshQzLikg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
