@@ -30,8 +30,8 @@ class SignupPageState extends State<SignupPage>{
 
     if(!verify){ 
      User.getInstance().sendCode(scaffoldKey).then((success){
+       hideOverlay();
        if(success){
-         hideOverlay();
          verify = true;
        }
      })
@@ -39,8 +39,8 @@ class SignupPageState extends State<SignupPage>{
     }
     else{
       User.getInstance().verifyCode(scaffoldKey).then((success){
+        hideOverlay();
         if(success){
-          hideOverlay();
           Navigator.of(context).pushAndRemoveUntil(
             new MaterialPageRoute(builder: (context) => new LandingPage()), 
             (Route route) => route == null);
@@ -74,8 +74,8 @@ class SignupPageState extends State<SignupPage>{
       body:new Stack(
         fit: StackFit.expand,
         children: <Widget>[
-          (overlay) ? new LoadingOverlay() : new Container(),
           (verify) ? new CodeInput(showOverlay) : new PhoneInput(showOverlay),
+          (overlay) ? new LoadingOverlay() : new Container()
         ],
       )
     );
