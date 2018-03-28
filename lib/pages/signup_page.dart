@@ -5,6 +5,13 @@ import '../ui/phone_input.dart';
 import '../ui/loading_overlay.dart';
 import '../utils/user.dart';
 
+void main() {
+  runApp(new MaterialApp(
+    title: 'Navigation Basics',
+    home: new SignupPage(),
+  ));
+}
+
 class SignupPage extends StatefulWidget{
 
   @override
