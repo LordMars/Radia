@@ -5,6 +5,10 @@ class Chat {
   List<String> _chatParticipants;
   String _creatorUserID;
   Location _createdLocation;
-  List<String> _messageID;
+  List<String> _messageIDs;
   DateTime _createdTimestamp;
+
+  void addChatParticipant(){
+    ///////////_chatParticipants
+  }
 }
