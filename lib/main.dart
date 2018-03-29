@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 import './pages/login_page.dart';
+import './pages/signup_page.dart';
 
 void main() => runApp(new MyApp());
 
@@ -9,6 +10,10 @@ class MyApp extends StatelessWidget{
   Widget build(BuildContext context){
     return new MaterialApp(
       title: 'Radia',
+      routes: <String, WidgetBuilder>{
+        '/signup': (BuildContext context) => new SignupPage(),
+        '/login': (BuildContext context) => new LoginPage(),
+      },
       home: new Scaffold(
         appBar: new AppBar(
           title: new Text('Radia'),
