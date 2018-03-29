@@ -26,7 +26,7 @@ var uuid = new Uuid();  // variable holds uuid instance
 //);
 
 void main() {
-  Message message = new Message("84343-userid-what-nr", MessageType.text, "God is good!", new DateTime.now());
+  Message message = new Message("84343-userid-what-nr", "1452-chat-ID", MessageType.text, "God is good!", new DateTime.now());
   createNewMessage(message);
 }
 
@@ -58,6 +58,7 @@ bool createNewMessage(Message message) {
   // TODO: catch firebase error
   return true;
 }
+
 
 // Get a list of messages belonging to a chat ID
 List<Message> getMessageByChatID(String chatID) {
