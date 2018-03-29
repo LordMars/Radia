@@ -66,18 +66,22 @@ class SignupPageState extends State<SignupPage>{
   
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      key: scaffoldKey,
-      appBar: new AppBar(
-        title: new Text('Phone SignUp'),
+    return new WillPopScope(
+        onWillPop: () async => Navigator.of(context).pushReplacementNamed('/login'),
+        child: new Scaffold(
+          key: scaffoldKey,
+          resizeToAvoidBottomPadding: false,
+          appBar: new AppBar(
+            title: new Text('Phone SignUp'),
+          ),
+          body:new Stack(
+            fit: StackFit.expand,
+            children: <Widget>[
+              (overlay) ? new Container() : ((verify) ? new CodeInput(showOverlay) : new PhoneInput(showOverlay)),
+              (overlay) ? new LoadingOverlay() : new Container(),
+            ],
+        )
       ),
-      body:new Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          (verify) ? new CodeInput(showOverlay) : new PhoneInput(showOverlay),
-          (overlay) ? new LoadingOverlay() : new Container()
-        ],
-      )
     );
   }
 }

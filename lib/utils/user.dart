@@ -11,6 +11,7 @@ class User{
   String _firstName;
   String _lastName;
   String _uid;
+  String _password;
 
 
   User(){
@@ -20,6 +21,7 @@ class User{
    this._firstName = '';
    this._lastName = '';
    this._uid = '';
+   this._password = '';
   }
 
 
@@ -44,6 +46,7 @@ class User{
  set setLastName(lastName){ this._lastName = lastName;}
 
  set setCode(code){ this._confirmationCode = code;}
+ set setPassword(password){this._password = password;}
  
  String get uid => this._uid;
 
@@ -93,14 +96,19 @@ class User{
     bool success = false;
 
     try{
-      await http.post(uri, body: {"radiaCode":this._confirmationCode,"uid": this._uid}).then((response){
+      await http.post(uri, body: {
+        "radiaCode":this._confirmationCode,
+        "uid": this._uid,
+        "password": this._password,
+        "phoneNumber": this._phone
+        }).then((response){
         
         if(response.statusCode == 200){
           result = 'Code Confirmed!';
           success = true;
         }
         else{
-          result = 'Error sending confirmation code';
+          result = 'Invalid Confirmation Code';
           success = false;
         }
         scaffoldKey.currentState.showSnackBar(  //Alert user text has been sent
@@ -113,7 +121,7 @@ class User{
     }catch(exception){
         scaffoldKey.currentState.showSnackBar(  //Alert user an error occured sending text
         new SnackBar(
-          content: new Text('Error Sending confirmation code'),
+          content: new Text('Error Sending Confirmation Code'),
         )
       );
       success = false;
