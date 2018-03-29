@@ -14,7 +14,7 @@ class PhoneInputState extends State<PhoneInput>{
 
   //Strings to be combined into final phonenumber
   String phoneNumber, countryCode, firstPart, secondPart, thirdPart;
-  String firstName, lastName;
+  String firstName, lastName, password;
 
   //Key giving the Form a unique identifier
   final formKey = new GlobalKey<FormState>();
@@ -34,6 +34,9 @@ class PhoneInputState extends State<PhoneInput>{
   TextEditingController secondPartNumberControl = new TextEditingController();
   TextEditingController thirdPartNumberControl = new TextEditingController();
 
+  bool hidePassword = true;
+  bool hidePasswordConfirmation = true;
+
   //Validates each field in the form
   void submitNumber(){
     final form = formKey.currentState;
@@ -45,6 +48,7 @@ class PhoneInputState extends State<PhoneInput>{
       User.getInstance().setPhone = phoneNumber;
 	    User.getInstance().setFirstName = firstName;
       User.getInstance().setLastName = lastName;
+      User.getInstance().setPassword = password;
       widget._showOverlay();
      
     }
@@ -60,6 +64,7 @@ class PhoneInputState extends State<PhoneInput>{
     thirdPart = '';
 	  firstName = '';
 	  lastName = '';
+    password = '';
     firstPartNumberControl.addListener((){
       if(firstPartNumberControl.text.length == 3){ FocusScope.of(context).requestFocus(secondInputNode);}
     });
@@ -116,7 +121,7 @@ class PhoneInputState extends State<PhoneInput>{
               ],
             ),
           ),
-		  new Padding(padding: new EdgeInsets.symmetric(vertical: 5.0),),
+		      new Padding(padding: new EdgeInsets.symmetric(vertical: 5.0),),
           new Container(
               child: new Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -173,14 +178,71 @@ class PhoneInputState extends State<PhoneInput>{
               new Padding(padding: new EdgeInsets.only(right: 10.0),),
             ],
           ),
-          new Padding(padding: new EdgeInsets.symmetric(vertical: 10.0)),
+          new Padding(padding: new EdgeInsets.symmetric(vertical: 10.0),),
           new Container(
+              width: MediaQuery.of(context).size.width * 0.80,
+              child: new Row(
+                children: <Widget>[
+                  new Expanded(
+                      child: new TextFormField(
+                        decoration: new InputDecoration(
+                          hintText: 'abc123', 
+                          labelText: 'Password',
+                          helperText: "At least 8 numbers, letters, or other characters", 
+                          ),
+                        keyboardType: TextInputType.text,
+                        validator: (val) => (val.length != 8 || val.length > 25) ? 'Too Short!' : null,
+                        obscureText: hidePassword,
+                        onSaved: (val) => password = val,
+                    ),
+                  ),
+                  new IconButton(
+                    alignment: Alignment.centerRight,
+                    icon: new Icon(Icons.remove_red_eye),
+                    onPressed: (){
+                      setState((){
+                        hidePassword = !hidePassword;
+                      });
+                    }),
+                ],
+              ),
+          ),
+          new Padding(padding: new EdgeInsets.symmetric(vertical: 10.0),),
+          new Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: new Row(
+                children: <Widget>[
+                  new Expanded(
+                      child: new TextFormField(
+                        decoration: new InputDecoration(
+                          hintText: 'abc123', 
+                          labelText: 'Confirm Password',
+                          helperText: "At least 8 numbers, letters, or other characters", 
+                          ),
+                        keyboardType: TextInputType.text,
+                        validator: (val){ (val != password) ? 'Does Not Match!' : null;},
+                        obscureText: hidePasswordConfirmation,
+                    ),
+                  ),
+                  new IconButton(
+                    icon: new Icon(Icons.remove_red_eye),
+                    onPressed: (){
+                      setState((){
+                        hidePasswordConfirmation = !hidePasswordConfirmation;
+                      });
+                    }),
+                ],
+              ),
+          ),
+          new Padding(padding: new EdgeInsets.symmetric(vertical: 10.0),),
+          new Container(
+            alignment: Alignment.center,
             child:new FlatButton(
-              color: Colors.blueAccent,
-              child: const Text("Submit", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-              onPressed: () => submitNumber(),
-            )
+            color: Colors.blueAccent,
+            child: const Text("Submit", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+            onPressed: () => submitNumber(),
           )
+        ),
         ]
       )
     );
