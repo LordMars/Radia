@@ -47,16 +47,25 @@ exports.sendConfirmationCode = functions.https.onRequest((req, res) => {
 
 exports.verifyUserCode = functions.https.onRequest((req, res) => {
 
-    if(!req.body.radiaCode){
+    if(!req.body.uid || 
+        !req.body.radiaCode || 
+        !req.body.password ||
+        !req.body.phoneNumber){
         return res.status(422).send({ error: 'Bad Input' });
     }
 
     const code = String(req.body.radiaCode);
     const uid = String(req.body.uid);
+    const password = String(req.body.password);
+    const phoneNumber = String(req.body.phoneNumber);
 
     return admin.database().ref(`/users/${uid}`).child('code').once('value').then((snapshot) =>{
         if(parseInt(code) === parseInt(snapshot.val())){
-            return admin.auth().createUser({uid: uid});
+            return admin.auth().createUser({
+                uid: uid,
+                password: password,
+                phoneNumber: phoneNumber,
+            });
         }
         else{
             return Promise.resolve(null);
