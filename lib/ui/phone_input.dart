@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../pages/main_page.dart';
 import '../utils/user.dart';
 
 class PhoneInput extends StatefulWidget{
 
   final VoidCallback _showOverlay;
   final _formKey;
-  PhoneInput(this._showOverlay, this._formKey);
+  final _page;
+  PhoneInput(this._showOverlay, this._formKey, this._page);
 
   State createState() => new PhoneInputState();
 }
@@ -37,12 +39,17 @@ class PhoneInputState extends State<PhoneInput>{
 
   //Validates each field in the form
   void submitNumber(){
-    final nameForm = widget._formKey.currentState;
+    bool nameVal = true;
+    FormState nameForm;
+    if(widget._page == 0){
+      nameForm = widget._formKey.currentState;
+      nameVal = nameForm.validate();
+    }
     final phoneForm = phoneFormKey.currentState;
-    bool nameVal = nameForm.validate();
     bool phoneVal = phoneForm.validate();
+
     if(nameVal && phoneVal){
-      nameForm.save();
+      (widget._formKey != null) ? nameForm.save() : null;
       phoneForm.save();
       FocusScope.of(context).requestFocus(new FocusNode()); 
 
@@ -80,7 +87,7 @@ class PhoneInputState extends State<PhoneInput>{
   @override
   Widget build(BuildContext context){
     return new Form(
-      key: phoneFormKey,
+      key: (widget._page == 0) ? widget._formKey:phoneFormKey,
       child: new Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -141,14 +148,40 @@ class PhoneInputState extends State<PhoneInput>{
             ],
           ),
           new Padding(padding: new EdgeInsets.symmetric(vertical: 10.0),),
-          new Container(
+          (widget._page == 1) ? new Container(
             alignment: Alignment.center,
             child:new FlatButton(
             color: Colors.blueAccent,
             child: const Text("Submit", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
             onPressed: () => submitNumber(),
           )
-        ),
+        ) : new Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                new FlatButton.icon(
+                  color: Colors.blue,
+                  label: const Text("Login", style: const TextStyle(color: Colors.white),),
+                  icon: const Icon(Icons.lock_open, color: Colors.white,),
+                  onPressed: () async{
+                    if(widget._formKey.currentState.validate()){
+                      widget._formKey.currentState.save();
+                      FocusScope.of(context).requestFocus(new FocusNode()); 
+
+                      phoneNumber = countryCode + firstPart + secondPart + thirdPart;
+                      User.getInstance().setPhone = phoneNumber;
+                      widget._showOverlay();
+                    }
+                  }
+                ),
+                new Padding(padding: new EdgeInsets.symmetric(horizontal: 15.0),),
+                new FlatButton.icon(
+                  color: Colors.blue,
+                  label: const Text("SignUp", style: const TextStyle(color: Colors.white),),
+                  icon: const Icon(Icons.person_outline, color: Colors.white,),
+                  onPressed: () => Navigator.of(context).pushReplacementNamed('/signup'),
+                ),
+              ],
+            ),
         ]
       )
     );
