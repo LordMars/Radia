@@ -147,7 +147,7 @@ class SignupPageState extends State<SignupPage>{
                   ),
                 ),
               ),
-              (overlay) ? new Container() : ((verify) ? new CodeInput(showOverlay) : new PhoneInput(showOverlay, formKey)),
+              (overlay) ? new Container() : ((verify) ? new CodeInput(showOverlay) : new PhoneInput(showOverlay, formKey, 1)),
               (overlay) ? new LoadingOverlay() : new Container(),
             ],
         )
