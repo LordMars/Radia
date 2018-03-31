@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import './main_page.dart';
+import '../utils/user.dart';
+import '../ui/loading_overlay.dart';
+import '../ui/code_input.dart';
+import '../ui/phone_input.dart';
 
 class LoginPage extends StatefulWidget{
   
@@ -11,106 +15,91 @@ class LoginPage extends StatefulWidget{
 
 class LoginPageState extends State<LoginPage>{
 
-  String countryCode;
-  String phoneNumber;
-  String password;
-  String savedNumber;
-  bool hidePassword;
+  String countryCode, phoneNumber;
+  bool overlay, verify;
+  
+  final formKey = new GlobalKey<FormState>();
+  final scaffoldKey = new GlobalKey<ScaffoldState>();
 
-  final phoneNumberController = new TextEditingController();
-  final passwordController = new TextEditingController();
+  Future<String> findSavedPhone() async{
+    String uid = '';
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    uid = preferences.getString('uid');
+    return uid;
+  }
+
+  void showOverlay(){
+    setState((){
+      overlay = true;
+    });
+
+    if(!verify){ 
+     User.getInstance().sendLoginCode(scaffoldKey).then((success){
+       hideOverlay();
+       if(success){
+         verify = true;
+       }
+     })
+     .catchError((onError) => verify = false);
+    }
+    else{
+      User.getInstance().verifyLoginCode(scaffoldKey).then((success) async{
+        hideOverlay();
+        if(success){
+          Navigator.of(context).pushAndRemoveUntil(
+            new MaterialPageRoute(builder: (context) => new HomePage()), 
+            (Route route) => route == null);
+        }
+      });
+    }
+  }
+
+  //Hides the overlay
+  void hideOverlay(){
+    setState((){
+      overlay = false;
+    });
+
+  }
+
 
   @override
   void initState(){
+    super.initState();
     countryCode = "+1";
     phoneNumber = "";
-    password = "";
-    hidePassword = true;
-   /*phoneNumberController.addListener((){
-      phoneNumberController.value.t
-    });*/
-    super.initState();
+    overlay = false;
+    verify = false;
+    findSavedPhone().then((uid){
+      if (uid != null && uid != ''){
+        User.getInstance().setUid = uid;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context){
     return new WillPopScope(
       onWillPop: () async => false,
-      child: new Material(
-        color: Colors.white,
-        child: new Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      child: new Scaffold(
+        key: scaffoldKey,
+        body: new Stack(
           children: <Widget>[
-            new Padding(
-              padding: const EdgeInsets.only(bottom: 25.0),
-              child: new Text("Radia", style: new TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 30.0),),
-            ),
-            new Container(
-                child: new DropdownButton(
-                  items: <DropdownMenuItem>[
-                    new DropdownMenuItem(
-                      child: new Text("+1"),
-                    )
-                  ], 
-                  onChanged: (value) => countryCode = value,
-              ),
-            ),
-            new Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              child:new TextField(
-                controller: phoneNumberController,
-                decoration: new InputDecoration(
-                  labelText: "Phone Number",
-                  hintText: "5555555555"
-                ),
-                keyboardType: TextInputType.phone,
-              ),
-            ),
-            new Padding(padding: new EdgeInsets.symmetric(vertical: 10.0),),
-            new Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              child: new Row(
-                children: <Widget>[
-                  new Expanded(
-                      child: new TextFormField(
-                        controller: passwordController,
-                        decoration: new InputDecoration( 
-                          labelText: 'Password',
-                          ),
-                        keyboardType: TextInputType.text,
-                        obscureText: hidePassword,
+            new Column(
+              children: <Widget>[(overlay) ? new Container() : new Padding(
+                padding: const EdgeInsets.only(top: 60.0),
+                child: new Container(
+                  child: new Text("Radia", style: new TextStyle(
+                    color: Colors.blue, 
+                    fontWeight: FontWeight.bold, 
+                    fontSize: 30.0),
                     ),
-                  ),
-                  new IconButton(
-                    icon: new Icon(Icons.remove_red_eye),
-                    onPressed: (){
-                      setState((){
-                        hidePassword = !hidePassword;
-                      });
-                    }),
-                ],
+                ),
               ),
-            ),
-            new Padding(padding: new EdgeInsets.only(top: 20.0),),
-            new Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                new FlatButton.icon(
-                  color: Colors.blue,
-                  label: const Text("Login", style: const TextStyle(color: Colors.white),),
-                  icon: const Icon(Icons.lock_open, color: Colors.white,),
-                  onPressed: () async => Navigator.of(context).pushAndRemoveUntil(
-                    new MaterialPageRoute(builder: (context) => new HomePage()), (Route route) => route == null),
-                ),
-                new Padding(padding: new EdgeInsets.symmetric(horizontal: 15.0),),
-                new FlatButton.icon(
-                  color: Colors.blue,
-                  label: const Text("SignUp", style: const TextStyle(color: Colors.white),),
-                  icon: const Icon(Icons.person_outline, color: Colors.white,),
-                  onPressed: () async => Navigator.of(context).pushReplacementNamed('/signup'),
-                ),
-              ],
-            ),
+              new Padding(padding: new EdgeInsets.only(bottom: 20.0),),
+            (overlay) ? new Container() : ((verify) ? new CodeInput(showOverlay) : new PhoneInput(showOverlay, formKey, 0)),
+            ]),
+            (overlay) ? new LoadingOverlay() : new Container()
           ],
         ),
       ),

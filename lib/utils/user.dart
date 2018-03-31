@@ -11,8 +11,6 @@ class User{
   String _firstName;
   String _lastName;
   String _uid;
-  String _password;
-
 
   User(){
    this._phone = '';
@@ -21,7 +19,6 @@ class User{
    this._firstName = '';
    this._lastName = '';
    this._uid = '';
-   this._password = '';
   }
 
 
@@ -33,29 +30,29 @@ class User{
   }
 
 
- String get phone => this._phone;
- set setPhone(phone){ this._phone = phone;}
+  String get phone => this._phone;
+  set setPhone(phone){ this._phone = phone;}
 
- String get status => this._status;
- set setStatus(status){ this._status = status;}
- 
- String get firstName => this._firstName;
- set setFirstName(firstName){ this._firstName = firstName;}
+  String get status => this._status;
+  set setStatus(status){ this._status = status;}
 
- String get lastName => this._lastName;
- set setLastName(lastName){ this._lastName = lastName;}
+  String get firstName => this._firstName;
+  set setFirstName(firstName){ this._firstName = firstName;}
 
- set setCode(code){ this._confirmationCode = code;}
- set setPassword(password){this._password = password;}
- 
- String get uid => this._uid;
+  String get lastName => this._lastName;
+  set setLastName(lastName){ this._lastName = lastName;}
+
+  set setCode(code){ this._confirmationCode = code;}
+
+  String get uid => this._uid;
+  set setUid(uid) => this._uid = uid;
 
  /* Attempts to post user's phone number to
   * cloud function. Receives a success or
   * error as a return
   */
- Future<bool> sendCode(GlobalKey<ScaffoldState>scaffoldKey)async{
-    var uri = Uri.parse('https://us-central1-radia-personal-build.cloudfunctions.net/sendConfirmationCode');
+ Future<bool> sendSignupCode(GlobalKey<ScaffoldState>scaffoldKey)async{
+    var uri = Uri.parse('https://us-central1-radia-personal-build.cloudfunctions.net/signupConfirmationCode');
     String result;
     bool success = false;
 
@@ -63,7 +60,7 @@ class User{
       await http.post(uri, body: {"phone": this._phone, "firstName":this._firstName, "lastName":this._lastName})
 	  .then((response){
         if(response.statusCode == 200){
-		  this._uid = JSON.decode(response.body)['uid'];
+		  this._uid = json.decode(response.body)['uid'];
           result = 'Sending Confirmation Text';
           success = true;
         }
@@ -90,8 +87,43 @@ class User{
     return success;
   }
 
-  Future<bool> verifyCode(GlobalKey<ScaffoldState>scaffoldKey)async{
-    var uri = Uri.parse('https://us-central1-radia-personal-build.cloudfunctions.net/verifyUserCode');
+  Future<bool> sendLoginCode(GlobalKey<ScaffoldState>scaffoldKey)async{
+    var uri = Uri.parse('https://us-central1-radia-personal-build.cloudfunctions.net/loginConfirmationCode');
+    String result;
+    bool success = false;
+
+    try{
+      await http.post(uri, body: {"phone": this._phone, "uid": this._uid})
+	  .then((response){
+        if(response.statusCode == 200){
+          result = 'Sending Confirmation Text';
+          success = true;
+        }
+        else{
+          result = 'Error sending phone number';
+          success = false;
+        }
+        scaffoldKey.currentState.showSnackBar(  //Alert user text has been sent
+        new SnackBar(
+            content: new Text(result),
+          )
+        );
+
+      });
+    }catch(exception){
+        scaffoldKey.currentState.showSnackBar(  //Alert user an error occured sending text
+        new SnackBar(
+          content: new Text('Error Sending Phone Number'),
+        )
+      );
+      success = false;
+    }
+
+    return success;
+  }
+
+  Future<bool> verifySignupCode(GlobalKey<ScaffoldState>scaffoldKey)async{
+    var uri = Uri.parse('https://us-central1-radia-personal-build.cloudfunctions.net/signupVerifyUserCode');
     String result;
     bool success = false;
 
@@ -99,7 +131,44 @@ class User{
       await http.post(uri, body: {
         "radiaCode":this._confirmationCode,
         "uid": this._uid,
-        "password": this._password,
+        "phoneNumber": this._phone
+        }).then((response){
+        
+        if(response.statusCode == 200){
+          result = 'Code Confirmed!';
+          success = true;
+        }
+        else{
+          result = 'Invalid Confirmation Code';
+          success = false;
+        }
+        scaffoldKey.currentState.showSnackBar(  //Alert user text has been sent
+        new SnackBar(
+            content: new Text(result),
+          )
+        );
+
+      });
+    }catch(exception){
+        scaffoldKey.currentState.showSnackBar(  //Alert user an error occured sending text
+        new SnackBar(
+          content: new Text('Error Sending Confirmation Code'),
+        )
+      );
+      success = false;
+    }
+    return success;
+  }
+
+Future<bool> verifyLoginCode(GlobalKey<ScaffoldState>scaffoldKey)async{
+    var uri = Uri.parse('https://us-central1-radia-personal-build.cloudfunctions.net/loginVerifyUserCode');
+    String result;
+    bool success = false;
+
+    try{
+      await http.post(uri, body: {
+        "radiaCode":this._confirmationCode,
+        "uid": this._uid,
         "phoneNumber": this._phone
         }).then((response){
         

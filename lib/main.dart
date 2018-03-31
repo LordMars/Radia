@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
+import 'dart:async';
 import './pages/login_page.dart';
 import './pages/signup_page.dart';
 
 void main() => runApp(new MyApp());
 
 class MyApp extends StatelessWidget{
+
   @override
   Widget build(BuildContext context){
     return new MaterialApp(
