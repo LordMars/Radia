@@ -83,15 +83,22 @@ class LoginPageState extends State<LoginPage>{
       onWillPop: () async => false,
       child: new Scaffold(
         key: scaffoldKey,
-        body: new Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        body: new Stack(
           children: <Widget>[
-            new Padding(
-              padding: const EdgeInsets.only(bottom: 25.0),
-              child: new Text("Radia", style: new TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 30.0),),
-            ),
-           (overlay) ? new Container() : ((verify) ? new CodeInput(showOverlay) : new PhoneInput(showOverlay, formKey, 0)),
-            new Padding(padding: new EdgeInsets.only(top: 20.0),),
+            new Column(
+              children: <Widget>[(overlay) ? new Container() : new Padding(
+                padding: const EdgeInsets.only(top: 60.0),
+                child: new Container(
+                  child: new Text("Radia", style: new TextStyle(
+                    color: Colors.blue, 
+                    fontWeight: FontWeight.bold, 
+                    fontSize: 30.0),
+                    ),
+                ),
+              ),
+              new Padding(padding: new EdgeInsets.only(bottom: 20.0),),
+            (overlay) ? new Container() : ((verify) ? new CodeInput(showOverlay) : new PhoneInput(showOverlay, formKey, 0)),
+            ]),
             (overlay) ? new LoadingOverlay() : new Container()
           ],
         ),
