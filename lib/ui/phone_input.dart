@@ -5,7 +5,8 @@ import '../utils/user.dart';
 class PhoneInput extends StatefulWidget{
 
   final VoidCallback _showOverlay;
-  PhoneInput(this._showOverlay);
+  final _formKey;
+  PhoneInput(this._showOverlay, this._formKey);
 
   State createState() => new PhoneInputState();
 }
@@ -14,10 +15,10 @@ class PhoneInputState extends State<PhoneInput>{
 
   //Strings to be combined into final phonenumber
   String phoneNumber, countryCode, firstPart, secondPart, thirdPart;
-  String firstName, lastName, password;
+  String firstName, lastName;
 
   //Key giving the Form a unique identifier
-  final formKey = new GlobalKey<FormState>();
+  final phoneFormKey = new GlobalKey<FormState>();
 
   //User Instance
   final User user = User.getInstance();
@@ -34,23 +35,20 @@ class PhoneInputState extends State<PhoneInput>{
   TextEditingController secondPartNumberControl = new TextEditingController();
   TextEditingController thirdPartNumberControl = new TextEditingController();
 
-  bool hidePassword = true;
-  bool hidePasswordConfirmation = true;
-
   //Validates each field in the form
   void submitNumber(){
-    final form = formKey.currentState;
-    if(form.validate()){
-      form.save();
+    final nameForm = widget._formKey.currentState;
+    final phoneForm = phoneFormKey.currentState;
+    bool nameVal = nameForm.validate();
+    bool phoneVal = phoneForm.validate();
+    if(nameVal && phoneVal){
+      nameForm.save();
+      phoneForm.save();
       FocusScope.of(context).requestFocus(new FocusNode()); 
 
       phoneNumber = countryCode + firstPart + secondPart + thirdPart;
       User.getInstance().setPhone = phoneNumber;
-	    User.getInstance().setFirstName = firstName;
-      User.getInstance().setLastName = lastName;
-      User.getInstance().setPassword = password;
       widget._showOverlay();
-     
     }
   }
 
@@ -62,9 +60,6 @@ class PhoneInputState extends State<PhoneInput>{
     firstPart = '';
     secondPart = '';
     thirdPart = '';
-	  firstName = '';
-	  lastName = '';
-    password = '';
     firstPartNumberControl.addListener((){
       if(firstPartNumberControl.text.length == 3){ FocusScope.of(context).requestFocus(secondInputNode);}
     });
@@ -85,43 +80,10 @@ class PhoneInputState extends State<PhoneInput>{
   @override
   Widget build(BuildContext context){
     return new Form(
-      key: formKey,
+      key: phoneFormKey,
       child: new Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          new Padding(padding: new EdgeInsets.symmetric(vertical: 10.0),),
-		      new Container(
-            child: new Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                new Padding(padding: new EdgeInsets.symmetric(horizontal: 5.0),),
-                new Expanded(
-                  child:new TextFormField(
-                    decoration: new InputDecoration(hintText: 'John', labelText: "First Name"),
-                    keyboardType: TextInputType.text,
-                    validator: (val) => (val.length == 0) ? "Invalid" : null,
-                    onSaved: (val) => firstName = val,
-                    inputFormatters: [
-                      new LengthLimitingTextInputFormatter(25)
-                    ],
-                  ),
-                ),
-                new Padding(padding: new EdgeInsets.only(left: 5.0),),
-                new Expanded(
-                  child:new TextFormField(
-                    decoration: new InputDecoration(hintText: 'Smith', labelText: "Last Name"),
-                    keyboardType: TextInputType.text,
-                    validator: (val) => (val.length == 0) ? "Invalid" : null,
-                    onSaved: (val) => lastName = val,
-                    inputFormatters: [
-                      new LengthLimitingTextInputFormatter(25)
-                    ],
-                  ),
-                ),
-                new Padding(padding: new EdgeInsets.symmetric(horizontal: 5.0),),
-              ],
-            ),
-          ),
-		      new Padding(padding: new EdgeInsets.symmetric(vertical: 5.0),),
           new Container(
               child: new Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -177,62 +139,6 @@ class PhoneInputState extends State<PhoneInput>{
               ),
               new Padding(padding: new EdgeInsets.only(right: 10.0),),
             ],
-          ),
-          new Padding(padding: new EdgeInsets.symmetric(vertical: 10.0),),
-          new Container(
-              width: MediaQuery.of(context).size.width * 0.80,
-              child: new Row(
-                children: <Widget>[
-                  new Expanded(
-                      child: new TextFormField(
-                        decoration: new InputDecoration(
-                          hintText: 'abc123', 
-                          labelText: 'Password',
-                          helperText: "At least 8 numbers, letters, or other characters", 
-                          ),
-                        keyboardType: TextInputType.text,
-                        validator: (val) => (val.length != 8 || val.length > 25) ? 'Too Short!' : null,
-                        obscureText: hidePassword,
-                        onSaved: (val) => password = val,
-                    ),
-                  ),
-                  new IconButton(
-                    alignment: Alignment.centerRight,
-                    icon: new Icon(Icons.remove_red_eye),
-                    onPressed: (){
-                      setState((){
-                        hidePassword = !hidePassword;
-                      });
-                    }),
-                ],
-              ),
-          ),
-          new Padding(padding: new EdgeInsets.symmetric(vertical: 10.0),),
-          new Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              child: new Row(
-                children: <Widget>[
-                  new Expanded(
-                      child: new TextFormField(
-                        decoration: new InputDecoration(
-                          hintText: 'abc123', 
-                          labelText: 'Confirm Password',
-                          helperText: "At least 8 numbers, letters, or other characters", 
-                          ),
-                        keyboardType: TextInputType.text,
-                        validator: (val){ (val != password) ? 'Does Not Match!' : null;},
-                        obscureText: hidePasswordConfirmation,
-                    ),
-                  ),
-                  new IconButton(
-                    icon: new Icon(Icons.remove_red_eye),
-                    onPressed: (){
-                      setState((){
-                        hidePasswordConfirmation = !hidePasswordConfirmation;
-                      });
-                    }),
-                ],
-              ),
           ),
           new Padding(padding: new EdgeInsets.symmetric(vertical: 10.0),),
           new Container(
