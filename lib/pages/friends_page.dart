@@ -17,7 +17,7 @@ class GoToMain extends RaisedButton{
     return new RaisedButton(
       elevation: 10.0,
       highlightElevation: 5.0,
-      child: new Text('Home'),
+      child: new Text('Go Home'),
       onPressed: (){
         Navigator.pop(context);
       }
