@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:english_words/english_words.dart';
 import './pages/login_page.dart';
 import './pages/signup_page.dart';
 
