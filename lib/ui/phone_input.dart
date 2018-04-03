@@ -17,7 +17,6 @@ class PhoneInputState extends State<PhoneInput>{
 
   //Strings to be combined into final phonenumber
   String phoneNumber, countryCode, firstPart, secondPart, thirdPart;
-  String firstName, lastName;
 
   //Key giving the Form a unique identifier
   final phoneFormKey = new GlobalKey<FormState>();
@@ -39,23 +38,27 @@ class PhoneInputState extends State<PhoneInput>{
 
   //Validates each field in the form
   void submitNumber(){
-    bool nameVal = true;
     FormState nameForm;
-    if(widget._page == 0){
-      nameForm = widget._formKey.currentState;
-      nameVal = nameForm.validate();
-    }
     final phoneForm = phoneFormKey.currentState;
     bool phoneVal = phoneForm.validate();
 
-    if(nameVal && phoneVal){
-      (widget._formKey != null) ? nameForm.save() : null;
+    if(phoneVal){
       phoneForm.save();
-      FocusScope.of(context).requestFocus(new FocusNode()); 
-
       phoneNumber = countryCode + firstPart + secondPart + thirdPart;
+      phoneForm.save();
+      FocusScope.of(context).requestFocus(new FocusNode());
       User.getInstance().setPhone = phoneNumber;
-      widget._showOverlay();
+    
+      if(widget._page == 1 ){
+        nameForm = widget._formKey.currentState;
+        if(nameForm.validate()){
+          nameForm.save();
+          widget._showOverlay();
+        }
+      }
+      else{
+        widget._showOverlay();
+      }
     }
   }
 
@@ -87,7 +90,7 @@ class PhoneInputState extends State<PhoneInput>{
   @override
   Widget build(BuildContext context){
     return new Form(
-      key: (widget._page == 0) ? widget._formKey:phoneFormKey,
+      key: phoneFormKey,
       child: new Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -162,16 +165,7 @@ class PhoneInputState extends State<PhoneInput>{
                   color: Colors.blue,
                   label: const Text("Login", style: const TextStyle(color: Colors.white),),
                   icon: const Icon(Icons.lock_open, color: Colors.white,),
-                  onPressed: () async{
-                    if(widget._formKey.currentState.validate()){
-                      widget._formKey.currentState.save();
-                      FocusScope.of(context).requestFocus(new FocusNode()); 
-
-                      phoneNumber = countryCode + firstPart + secondPart + thirdPart;
-                      User.getInstance().setPhone = phoneNumber;
-                      widget._showOverlay();
-                    }
-                  }
+                  onPressed: () => submitNumber()
                 ),
                 new Padding(padding: new EdgeInsets.symmetric(horizontal: 15.0),),
                 new FlatButton.icon(

@@ -18,7 +18,6 @@ class LoginPageState extends State<LoginPage>{
   String countryCode, phoneNumber;
   bool overlay, verify;
   
-  final formKey = new GlobalKey<FormState>();
   final scaffoldKey = new GlobalKey<ScaffoldState>();
 
   Future<String> findSavedPhone() async{
@@ -97,7 +96,7 @@ class LoginPageState extends State<LoginPage>{
                 ),
               ),
               new Padding(padding: new EdgeInsets.only(bottom: 20.0),),
-            (overlay) ? new Container() : ((verify) ? new CodeInput(showOverlay) : new PhoneInput(showOverlay, formKey, 0)),
+            (overlay) ? new Container() : ((verify) ? new CodeInput(showOverlay) : new PhoneInput(showOverlay, null, 0)),
             ]),
             (overlay) ? new LoadingOverlay() : new Container()
           ],
