@@ -63,7 +63,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context){
       // Temporary API key included in url
-      image = new Image.network("https://maps.googleapis.com/maps/api/staticmap?center=${_currentLocation["latitude"]},${_currentLocation["longitude"]}&zoom=15&size=270x448&scale=2&key=AIzaSyDaTLHqDQpGuN-IOTmgbUHYRS-oRE5PM0I");
+      var lat = _currentLocation["latitude"];
+      var long = _currentLocation["longitude"];
+      image = new Image.network("https://maps.googleapis.com/maps/api/staticmap?center=$lat,$long&zoom=15&size=270x448&scale=2&key=AIzaSyDaTLHqDQpGuN-IOTmgbUHYRS-oRE5PM0I");
       currentWidget = !currentWidget;
 
 
