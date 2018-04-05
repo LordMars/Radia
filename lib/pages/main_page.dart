@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import './chat_page.dart';
 import './friends_page.dart';
-
 import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:location/location.dart';
 
@@ -63,8 +61,8 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context){
       // Temporary API key included in url
-      var lat = _currentLocation["latitude"];
-      var long = _currentLocation["longitude"];
+      final double lat = _currentLocation["latitude"];
+      final double long = _currentLocation["longitude"];
       image = new Image.network("https://maps.googleapis.com/maps/api/staticmap?center=$lat,$long&zoom=15&size=270x448&scale=2&key=AIzaSyDaTLHqDQpGuN-IOTmgbUHYRS-oRE5PM0I");
       currentWidget = !currentWidget;
 
