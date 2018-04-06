@@ -33,7 +33,6 @@ class PhoneInputState extends State<PhoneInput>{
   //Controllers for each part of the phone number
   TextEditingController firstPartNumberControl = new TextEditingController();
   TextEditingController secondPartNumberControl = new TextEditingController();
-  TextEditingController thirdPartNumberControl = new TextEditingController();
 
   //Validates each field in the form
   void submitNumber(){
@@ -41,6 +40,7 @@ class PhoneInputState extends State<PhoneInput>{
     final phoneForm = phoneFormKey.currentState;
     bool phoneVal = phoneForm.validate();
 
+    //Continue if phone input is valid
     if(phoneVal){
       phoneForm.save();
       phoneNumber = countryCode + firstPart + secondPart + thirdPart;
@@ -48,6 +48,7 @@ class PhoneInputState extends State<PhoneInput>{
       FocusScope.of(context).requestFocus(new FocusNode());
       user.setPhone = phoneNumber;
     
+      //Validate name input for SignUpPage
       if(widget._page == 1 ){
         nameForm = widget._formKey.currentState;
         if(nameForm.validate()){
@@ -55,7 +56,7 @@ class PhoneInputState extends State<PhoneInput>{
           widget._showOverlay();
         }
       }
-      else{
+      else{ //Only need phone number when on LoginPage
         widget._showOverlay();
       }
     }
@@ -65,6 +66,7 @@ class PhoneInputState extends State<PhoneInput>{
   @override
   void initState(){
     super.initState();
+    //Default values of phone number
     countryCode = '+1';
     firstPart = '';
     secondPart = '';
@@ -83,7 +85,6 @@ class PhoneInputState extends State<PhoneInput>{
     super.dispose();
     firstPartNumberControl.dispose();
     secondPartNumberControl.dispose();
-    thirdPartNumberControl.dispose();
   }
 
   @override
@@ -122,7 +123,7 @@ class PhoneInputState extends State<PhoneInput>{
                   validator: (val) => val.length != 3 ? 'Invalid' : null,
                   onSaved: (val) => firstPart = val,
                   inputFormatters: [
-                    new LengthLimitingTextInputFormatter(3)
+                    new LengthLimitingTextInputFormatter(3) //First three digits of phone number
                   ],
                   focusNode: firstInputNode,
                 )
@@ -136,7 +137,7 @@ class PhoneInputState extends State<PhoneInput>{
                   validator: (val) => val.length != 3 ? 'Invalid' : null,
                   onSaved: (val) => secondPart = val,
                   inputFormatters: [
-                    new LengthLimitingTextInputFormatter(3)
+                    new LengthLimitingTextInputFormatter(3) //Middle three digits of phone number
                   ],
                   focusNode: secondInputNode,
                 )
@@ -144,13 +145,12 @@ class PhoneInputState extends State<PhoneInput>{
               new Padding(padding: new EdgeInsets.only(right: 10.0),),
               new Expanded(
                 child: new TextFormField(
-                  controller: thirdPartNumberControl,
                   decoration: const InputDecoration(hintText: '5555', border: const OutlineInputBorder()),
                   keyboardType: TextInputType.phone,
                   validator: (val) => val.length != 4 ? 'Invalid' : null,
                   onSaved: (val) => thirdPart = val,
                   inputFormatters: [
-                    new LengthLimitingTextInputFormatter(4)
+                    new LengthLimitingTextInputFormatter(4) //Last 4 digits of phone number 
                   ],
                   focusNode: thirdInputNode,
                 )
@@ -159,31 +159,32 @@ class PhoneInputState extends State<PhoneInput>{
             ],
           ),
           new Padding(padding: new EdgeInsets.symmetric(vertical: 10.0),),
-          (widget._page == 1) ? new Container(
+          (widget._page == 1) ? new Container(  //Show only Submit button if on SignUpPage
             alignment: Alignment.center,
             child:new FlatButton(
             color: Colors.blueAccent,
             child: const Text("Submit", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
             onPressed: () => submitNumber(),
           )
-        ) : new Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                new FlatButton.icon(
-                  color: Colors.blue,
-                  label: const Text("Login", style: const TextStyle(color: Colors.white),),
-                  icon: const Icon(Icons.lock_open, color: Colors.white,),
-                  onPressed: () => submitNumber()
-                ),
-                new Padding(padding: new EdgeInsets.symmetric(horizontal: 15.0),),
-                new FlatButton.icon(
-                  color: Colors.blue,
-                  label: const Text("SignUp", style: const TextStyle(color: Colors.white),),
-                  icon: const Icon(Icons.person_outline, color: Colors.white,),
-                  onPressed: () => Navigator.of(context).pushReplacementNamed('/signup'),
-                ),
-              ],
-            ),
+        ) : //Show Login and SignUp buttons if currently on LoginPage
+          new Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              new FlatButton.icon(
+                color: Colors.blue,
+                label: const Text("Login", style: const TextStyle(color: Colors.white),),
+                icon: const Icon(Icons.lock_open, color: Colors.white,),
+                onPressed: () => submitNumber()
+              ),
+              new Padding(padding: new EdgeInsets.symmetric(horizontal: 15.0),),
+              new FlatButton.icon(
+                color: Colors.blue,
+                label: const Text("SignUp", style: const TextStyle(color: Colors.white),),
+                icon: const Icon(Icons.person_outline, color: Colors.white,),
+                onPressed: () => Navigator.of(context).pushReplacementNamed('/signup'),
+              ),
+            ],
+          ),
         ]
       )
     );
