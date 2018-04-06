@@ -10,12 +10,6 @@ import '../ui/phone_input.dart';
 import '../ui/loading_overlay.dart';
 import '../utils/user.dart';
 
-void main() {
-  runApp(new MaterialApp(
-    title: 'Navigation Basics',
-    home: new SignupPage(),
-  ));
-}
 
 class SignupPage extends StatefulWidget{
 
@@ -33,6 +27,9 @@ class SignupPageState extends State<SignupPage>{
   bool overlay, verify;
   String firstName, lastName;
 
+  /* Sends first/last names and phone number
+   * to cloud function for UID
+   */
   Future<bool> sendSignupCode()async{
     var uri = Uri.parse('https://us-central1-radia-personal-build.cloudfunctions.net/signupConfirmationCode');
     String result;
@@ -40,8 +37,8 @@ class SignupPageState extends State<SignupPage>{
 
     try{
       await http.post(uri, body: {"phone": User.getInstance().phone, 
-      "firstName":User.getInstance().firstName, 
-      "lastName":User.getInstance().lastName})
+      "firstName": User.getInstance().firstName, 
+      "lastName": User.getInstance().lastName})
 	  .then((response){
         if(response.statusCode == 200){
 		  User.getInstance().setUid = json.decode(response.body)['uid'];
@@ -71,6 +68,9 @@ class SignupPageState extends State<SignupPage>{
     return success;
   }
 
+  /* Sends entered confirmation code to cloud function
+   * for verification
+   */
   Future<bool> verifySignupCode()async{
     var uri = Uri.parse('https://us-central1-radia-personal-build.cloudfunctions.net/signupVerifyUserCode');
     String result;
@@ -109,10 +109,10 @@ class SignupPageState extends State<SignupPage>{
     return success;
   }
 
-  /*Shows overlay while waiting for response from
-  * cloud function for both sending the verification
-  * code and verifying the code the user has input 
-  */
+  /* Shows overlay while waiting for response from
+   * cloud function for both sending the verification
+   * code and verifying the code the user has input 
+   */
   void showOverlay(){
     User.getInstance().setFirstName = firstName;
     User.getInstance().setLastName = lastName;
@@ -172,7 +172,7 @@ class SignupPageState extends State<SignupPage>{
           key: scaffoldKey,
           resizeToAvoidBottomPadding: false,
           appBar: new AppBar(
-            title: new Text('Phone SignUp'),
+            title: const Text('Phone SignUp'),
           ),
           body:new Stack(
             fit: StackFit.expand,
@@ -191,16 +191,16 @@ class SignupPageState extends State<SignupPage>{
                           fontSize: 30.0),
                           )
                         ),
-                      new Padding(padding: new EdgeInsets.symmetric(vertical: 10.0),),
+                      new Padding(padding: const EdgeInsets.symmetric(vertical: 10.0),),
                       new Container(
                         alignment: Alignment.topCenter,
                         child: new Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            new Padding(padding: new EdgeInsets.symmetric(horizontal: 5.0),),
+                            new Padding(padding: const EdgeInsets.symmetric(horizontal: 5.0),),
                             new Expanded(
                               child:new TextFormField(
-                                decoration: new InputDecoration(hintText: 'John', labelText: "First Name"),
+                                decoration: const InputDecoration(hintText: 'John', labelText: "First Name"),
                                 keyboardType: TextInputType.text,
                                 validator: (val) => (val.length == 0) ? "Invalid" : null,
                                 onSaved: (val) => firstName = val,
@@ -212,7 +212,7 @@ class SignupPageState extends State<SignupPage>{
                             new Padding(padding: new EdgeInsets.only(left: 5.0),),
                             new Expanded(
                               child:new TextFormField(
-                                decoration: new InputDecoration(hintText: 'Smith', labelText: "Last Name"),
+                                decoration: const InputDecoration(hintText: 'Smith', labelText: "Last Name"),
                                 keyboardType: TextInputType.text,
                                 validator: (val) => (val.length == 0) ? "Invalid" : null,
                                 onSaved: (val) => lastName = val,
@@ -221,7 +221,7 @@ class SignupPageState extends State<SignupPage>{
                                 ],
                               ),
                             ),
-                            new Padding(padding: new EdgeInsets.symmetric(horizontal: 5.0),),
+                            new Padding(padding: const EdgeInsets.symmetric(horizontal: 5.0),),
                           ],
                         ),
                       ),
