@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../pages/main_page.dart';
 import '../utils/user.dart';
 
 class PhoneInput extends StatefulWidget{
@@ -47,7 +46,7 @@ class PhoneInputState extends State<PhoneInput>{
       phoneNumber = countryCode + firstPart + secondPart + thirdPart;
       phoneForm.save();
       FocusScope.of(context).requestFocus(new FocusNode());
-      User.getInstance().setPhone = phoneNumber;
+      user.setPhone = phoneNumber;
     
       if(widget._page == 1 ){
         nameForm = widget._formKey.currentState;
@@ -98,20 +97,20 @@ class PhoneInputState extends State<PhoneInput>{
               child: new Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children:<Widget>[
-                  new Text("Country Code:", style: new TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
-                  new Padding(padding: new EdgeInsets.symmetric(horizontal: 5.0)),
+                  const Text("Country Code:", style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
+                  new Padding(padding: const EdgeInsets.symmetric(horizontal: 5.0)),
                   new DropdownButton(
                   onChanged: (value) => countryCode = value,
                   items: [
-                    new DropdownMenuItem(
-                      child: new Text("+1")
+                    const DropdownMenuItem(
+                      child: const Text("+1")
                     ),
                   ],
                 ),
               ]
             )
           ),
-          new Padding(padding: new EdgeInsets.symmetric(vertical: 5.0),),
+          new Padding(padding: const EdgeInsets.symmetric(vertical: 5.0),),
           new Row(
             children: <Widget>[
               new Padding(padding: new EdgeInsets.only(right: 5.0),),
@@ -122,6 +121,9 @@ class PhoneInputState extends State<PhoneInput>{
                   keyboardType: TextInputType.phone,
                   validator: (val) => val.length != 3 ? 'Invalid' : null,
                   onSaved: (val) => firstPart = val,
+                  inputFormatters: [
+                    new LengthLimitingTextInputFormatter(3)
+                  ],
                   focusNode: firstInputNode,
                 )
               ),
@@ -133,6 +135,9 @@ class PhoneInputState extends State<PhoneInput>{
                   keyboardType: TextInputType.phone,
                   validator: (val) => val.length != 3 ? 'Invalid' : null,
                   onSaved: (val) => secondPart = val,
+                  inputFormatters: [
+                    new LengthLimitingTextInputFormatter(3)
+                  ],
                   focusNode: secondInputNode,
                 )
               ),
@@ -140,10 +145,13 @@ class PhoneInputState extends State<PhoneInput>{
               new Expanded(
                 child: new TextFormField(
                   controller: thirdPartNumberControl,
-                  decoration: new InputDecoration(hintText: '5555', border: new OutlineInputBorder()),
+                  decoration: const InputDecoration(hintText: '5555', border: const OutlineInputBorder()),
                   keyboardType: TextInputType.phone,
                   validator: (val) => val.length != 4 ? 'Invalid' : null,
                   onSaved: (val) => thirdPart = val,
+                  inputFormatters: [
+                    new LengthLimitingTextInputFormatter(4)
+                  ],
                   focusNode: thirdInputNode,
                 )
               ),
