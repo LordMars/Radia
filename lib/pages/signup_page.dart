@@ -164,7 +164,10 @@ class SignupPageState extends State<SignupPage>{
   @override
   Widget build(BuildContext context) {
     return new WillPopScope(
-        onWillPop: () async => Navigator.of(context).pushReplacementNamed('/login'),
+        onWillPop: () async{
+          Navigator.of(context).pushReplacementNamed('/login');
+          return false;
+        },
         child: new Scaffold(
           key: scaffoldKey,
           resizeToAvoidBottomPadding: false,
