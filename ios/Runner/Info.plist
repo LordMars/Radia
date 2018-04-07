@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>NSLocationWhenInUseUsageDescription</key>
-	<string>Location</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-    <string>Location Outside App</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
@@ -49,5 +45,23 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>CFBundleURLTypes</key>
+  <array>
+      <dict>
+         <key>CFBundleTypeRole</key>
+         <string>Editor</string>
+         <key>CFBundleURLSchemes</key>
+         <array>
+         <!-- reverse url of your client id, for example: --> 
+<string>com.googleusercontent.apps.21220570862-d6s4ol6frkvucrrnif8j34gfe79dh53u</string>
+         <!-- bundle id, for example: -->
+            <string>com.radia.radia</string>
+         </array>
+      </dict>
+  </array>
+  <key>NSLocationWhenInUseUsageDescription</key>
+  <string>Join chats based on proximity</string>
+  <key>NSLocationAlwaysAndWhenInUseUsage</key>
+  <string>Join chats based on proximity</string>
 </dict>
 </plist>
