@@ -76,7 +76,7 @@ class _HomePageState extends State<HomePage> {
               children: <Widget>[ image,
                                   //Do we still even want these?
                                   // new GoToFriends(),
-                                  //new GoToChat(),
+                                  new GoToChat(),
                                 ]
           ),
         ],)
@@ -120,7 +120,7 @@ class GoToChat extends StatelessWidget{
 MaterialPageRoute chatSwitch(){
           //login logic goes here. determines if following code is allowed
           return new MaterialPageRoute(
-            builder: (context) => new ChatsPage()
+            builder: (context) => new Page()
           );
 }
 

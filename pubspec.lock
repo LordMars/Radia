@@ -98,15 +98,7 @@ packages:
       name: firebase_auth
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< HEAD
     version: "0.5.3"
-=======
-<<<<<<< HEAD
-    version: "0.5.2"
-=======
-    version: "0.5.3"
->>>>>>> 82db6bdbd57c408dd00cec25755b0eec1580f82c
->>>>>>> c1f46dae25f9f939716efc7cd828bcf4c408c3e8
   firebase_core:
     dependency: transitive
     description:
