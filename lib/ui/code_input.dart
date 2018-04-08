@@ -89,7 +89,6 @@ class CodeInputState extends State<CodeInput>{
         child: new Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            //new Text("Radia", style: new TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 30.0),),
             new Padding(padding: new EdgeInsets.symmetric(vertical: 10.0),),
             new Text("Enter Confirmation Code:"),
             new Padding(padding: const EdgeInsets.symmetric(vertical: 5.0),),

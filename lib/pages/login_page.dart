@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import './main_page.dart';
 import '../utils/user.dart';
 import '../ui/loading_overlay.dart';
@@ -18,7 +20,6 @@ class LoginPageState extends State<LoginPage>{
   String countryCode, phoneNumber;
   bool overlay, verify;
   
-  final formKey = new GlobalKey<FormState>();
   final scaffoldKey = new GlobalKey<ScaffoldState>();
 
   Future<String> findSavedPhone() async{
@@ -28,13 +29,89 @@ class LoginPageState extends State<LoginPage>{
     return uid;
   }
 
+/* Attempts to post user's phone number to
+  * cloud function. Receives a success or
+  * error as a return
+  */
+  Future<bool> sendLoginCode()async{
+    var uri = Uri.parse('https://us-central1-radia-personal-build.cloudfunctions.net/loginConfirmationCode');
+    String result;
+    bool success = false;
+
+    try{
+      await http.post(uri, body: {"phone": User.getInstance().phone, "uid": User.getInstance().uid})
+	  .then((response){
+        if(response.statusCode == 200){
+          result = 'Sending Confirmation Text';
+          success = true;
+        }
+        else{
+          result = 'Error sending phone number';
+          success = false;
+        }
+        scaffoldKey.currentState.showSnackBar(  //Alert user text has been sent
+        new SnackBar(
+            content: new Text(result),
+          )
+        );
+
+      });
+    }catch(exception){
+        scaffoldKey.currentState.showSnackBar(  //Alert user an error occured sending text
+        new SnackBar(
+          content: const Text('Error Sending Phone Number'),
+        )
+      );
+      success = false;
+    }
+    return success;
+  }
+
+  Future<bool> verifyLoginCode()async{
+    var uri = Uri.parse('https://us-central1-radia-personal-build.cloudfunctions.net/loginVerifyUserCode');
+    String result;
+    bool success = false;
+
+    try{
+      await http.post(uri, body: {
+        "radiaCode":User.getInstance().code,
+        "uid": User.getInstance().uid,
+        "phoneNumber": User.getInstance().phone
+        }).then((response){
+        
+        if(response.statusCode == 200){
+          result = 'Code Confirmed!';
+          success = true;
+        }
+        else{
+          result = 'Invalid Confirmation Code';
+          success = false;
+        }
+        scaffoldKey.currentState.showSnackBar(  //Alert user text has been sent
+        new SnackBar(
+            content: new Text(result),
+          )
+        );
+
+      });
+    }catch(exception){
+        scaffoldKey.currentState.showSnackBar(  //Alert user an error occured sending text
+        new SnackBar(
+          content: const Text('Error Sending Confirmation Code'),
+        )
+      );
+      success = false;
+    }
+    return success;
+  }
+
   void showOverlay(){
     setState((){
       overlay = true;
     });
 
     if(!verify){ 
-     User.getInstance().sendLoginCode(scaffoldKey).then((success){
+     sendLoginCode().then((success){
        hideOverlay();
        if(success){
          verify = true;
@@ -43,7 +120,7 @@ class LoginPageState extends State<LoginPage>{
      .catchError((onError) => verify = false);
     }
     else{
-      User.getInstance().verifyLoginCode(scaffoldKey).then((success) async{
+      verifyLoginCode().then((success) async{
         hideOverlay();
         if(success){
           Navigator.of(context).pushAndRemoveUntil(
@@ -89,7 +166,7 @@ class LoginPageState extends State<LoginPage>{
               children: <Widget>[(overlay) ? new Container() : new Padding(
                 padding: const EdgeInsets.only(top: 60.0),
                 child: new Container(
-                  child: new Text("Radia", style: new TextStyle(
+                  child: const Text("Radia", style: const TextStyle(
                     color: Colors.blue, 
                     fontWeight: FontWeight.bold, 
                     fontSize: 30.0),
@@ -97,7 +174,7 @@ class LoginPageState extends State<LoginPage>{
                 ),
               ),
               new Padding(padding: new EdgeInsets.only(bottom: 20.0),),
-            (overlay) ? new Container() : ((verify) ? new CodeInput(showOverlay) : new PhoneInput(showOverlay, formKey, 0)),
+            (overlay) ? new Container() : ((verify) ? new CodeInput(showOverlay) : new PhoneInput(showOverlay, null, 0)),
             ]),
             (overlay) ? new LoadingOverlay() : new Container()
           ],

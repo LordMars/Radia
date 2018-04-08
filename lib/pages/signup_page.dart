@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import './main_page.dart';
 import '../ui/code_input.dart';
 import '../ui/phone_input.dart';
 import '../ui/loading_overlay.dart';
 import '../utils/user.dart';
 
-void main() {
-  runApp(new MaterialApp(
-    title: 'Navigation Basics',
-    home: new SignupPage(),
-  ));
-}
 
 class SignupPage extends StatefulWidget{
 
@@ -30,10 +27,92 @@ class SignupPageState extends State<SignupPage>{
   bool overlay, verify;
   String firstName, lastName;
 
-  /*Shows overlay while waiting for response from
-  * cloud function for both sending the verification
-  * code and verifying the code the user has input 
-  */
+  /* Sends first/last names and phone number
+   * to cloud function for UID
+   */
+  Future<bool> sendSignupCode()async{
+    var uri = Uri.parse('https://us-central1-radia-personal-build.cloudfunctions.net/signupConfirmationCode');
+    String result;
+    bool success = false;
+
+    try{
+      await http.post(uri, body: {"phone": User.getInstance().phone, 
+      "firstName": User.getInstance().firstName, 
+      "lastName": User.getInstance().lastName})
+	  .then((response){
+        if(response.statusCode == 200){
+		  User.getInstance().setUid = json.decode(response.body)['uid'];
+          result = 'Sending Confirmation Text';
+          success = true;
+        }
+        else{
+          result = 'Error sending phone number';
+          success = false;
+        }
+        scaffoldKey.currentState.showSnackBar(  //Alert user text has been sent
+        new SnackBar(
+            content: new Text(result),
+          )
+        );
+
+      });
+    }catch(exception){
+        scaffoldKey.currentState.showSnackBar(  //Alert user an error occured sending text
+        new SnackBar(
+          content: new Text('Error Sending Phone Number'),
+        )
+      );
+      success = false;
+    }
+
+    return success;
+  }
+
+  /* Sends entered confirmation code to cloud function
+   * for verification
+   */
+  Future<bool> verifySignupCode()async{
+    var uri = Uri.parse('https://us-central1-radia-personal-build.cloudfunctions.net/signupVerifyUserCode');
+    String result;
+    bool success = false;
+
+    try{
+      await http.post(uri, body: {
+        "radiaCode":User.getInstance().code,
+        "uid": User.getInstance().uid,
+        "phoneNumber": User.getInstance().phone
+        }).then((response){
+        
+        if(response.statusCode == 200){
+          result = 'Code Confirmed!';
+          success = true;
+        }
+        else{
+          result = 'Invalid Confirmation Code';
+          success = false;
+        }
+        scaffoldKey.currentState.showSnackBar(  //Alert user text has been sent
+        new SnackBar(
+            content: new Text(result),
+          )
+        );
+
+      });
+    }catch(exception){
+        scaffoldKey.currentState.showSnackBar(  //Alert user an error occured sending text
+        new SnackBar(
+          content: const Text('Error Sending Confirmation Code'),
+        )
+      );
+      success = false;
+    }
+    return success;
+  }
+
+  /* Shows overlay while waiting for response from
+   * cloud function for both sending the verification
+   * code and verifying the code the user has input 
+   */
   void showOverlay(){
     User.getInstance().setFirstName = firstName;
     User.getInstance().setLastName = lastName;
@@ -42,7 +121,7 @@ class SignupPageState extends State<SignupPage>{
     });
 
     if(!verify){ 
-     User.getInstance().sendSignupCode(scaffoldKey).then((success){
+     sendSignupCode().then((success){
        hideOverlay();
        if(success){
          verify = true;
@@ -51,7 +130,7 @@ class SignupPageState extends State<SignupPage>{
      .catchError((onError) => verify = false);
     }
     else{
-      User.getInstance().verifySignupCode(scaffoldKey).then((success) async{
+      verifySignupCode().then((success) async{
         hideOverlay();
         if(success){
           SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -85,12 +164,15 @@ class SignupPageState extends State<SignupPage>{
   @override
   Widget build(BuildContext context) {
     return new WillPopScope(
-        onWillPop: () async => Navigator.of(context).pushReplacementNamed('/login'),
+        onWillPop: () async{
+          Navigator.of(context).pushReplacementNamed('/login');
+          return false;
+        },
         child: new Scaffold(
           key: scaffoldKey,
           resizeToAvoidBottomPadding: false,
           appBar: new AppBar(
-            title: new Text('Phone SignUp'),
+            title: const Text('Phone SignUp'),
           ),
           body:new Stack(
             fit: StackFit.expand,
@@ -103,22 +185,22 @@ class SignupPageState extends State<SignupPage>{
                     children: <Widget>[
                       new Container(
                         alignment: Alignment.topCenter,
-                        child: new Text("Radia", style: new TextStyle(
+                        child: const Text("Radia", style: const TextStyle(
                           color: Colors.blue, 
                           fontWeight: FontWeight.bold, 
                           fontSize: 30.0),
                           )
                         ),
-                      new Padding(padding: new EdgeInsets.symmetric(vertical: 10.0),),
+                      new Padding(padding: const EdgeInsets.symmetric(vertical: 10.0),),
                       new Container(
                         alignment: Alignment.topCenter,
                         child: new Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            new Padding(padding: new EdgeInsets.symmetric(horizontal: 5.0),),
+                            new Padding(padding: const EdgeInsets.symmetric(horizontal: 5.0),),
                             new Expanded(
                               child:new TextFormField(
-                                decoration: new InputDecoration(hintText: 'John', labelText: "First Name"),
+                                decoration: const InputDecoration(hintText: 'John', labelText: "First Name"),
                                 keyboardType: TextInputType.text,
                                 validator: (val) => (val.length == 0) ? "Invalid" : null,
                                 onSaved: (val) => firstName = val,
@@ -130,7 +212,7 @@ class SignupPageState extends State<SignupPage>{
                             new Padding(padding: new EdgeInsets.only(left: 5.0),),
                             new Expanded(
                               child:new TextFormField(
-                                decoration: new InputDecoration(hintText: 'Smith', labelText: "Last Name"),
+                                decoration: const InputDecoration(hintText: 'Smith', labelText: "Last Name"),
                                 keyboardType: TextInputType.text,
                                 validator: (val) => (val.length == 0) ? "Invalid" : null,
                                 onSaved: (val) => lastName = val,
@@ -139,7 +221,7 @@ class SignupPageState extends State<SignupPage>{
                                 ],
                               ),
                             ),
-                            new Padding(padding: new EdgeInsets.symmetric(horizontal: 5.0),),
+                            new Padding(padding: const EdgeInsets.symmetric(horizontal: 5.0),),
                           ],
                         ),
                       ),
