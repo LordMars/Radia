@@ -50,7 +50,7 @@ class GoToChat extends StatelessWidget{
 MaterialPageRoute chatSwitch(){
           //login logic goes here. determines if following code is allowed
           return new MaterialPageRoute(
-            builder: (context) => new ChatPage()
+            builder: (context) => new ChatsPage()
           );
 }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 import 'dart:async';
+import './pages/main_page.dart';
 import './pages/login_page.dart';
 import './pages/signup_page.dart';
 
@@ -44,7 +45,8 @@ class GoToLogin extends RaisedButton{
         Navigator.push(
           context,
           new MaterialPageRoute(
-            builder: (context) => new LoginPage()
+            //builder: (context) => new LoginPage()
+            builder: (context) => new HomePage()
           ),
         );
       }
