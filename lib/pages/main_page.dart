@@ -89,15 +89,17 @@ class _HomePageState extends State<HomePage> {
     return new Material(
       child: new Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          new Stack(
-            children: [
-              new Container(
-                child: image,
-              )
-            ],
-            overflow: Overflow.clip
+          new Expanded(
+            child: new Stack(
+              children: [
+                new Container(
+                  child: image,
+                )
+              ],
+              overflow: Overflow.clip
+            ),
           )
         ]
       )
