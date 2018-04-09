@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../utils/user.dart';
 
 class CodeInput extends StatefulWidget{
@@ -103,6 +104,9 @@ class CodeInputState extends State<CodeInput>{
                     keyboardType: TextInputType.number,
                     validator: (val) => (val.length != 1 || int.parse(val.substring(0, 1), onError:(e) => null) == null) ? "Invalid" : null,
                     onSaved: (val) => firstNum = val,
+                    inputFormatters: [
+                      new LengthLimitingTextInputFormatter(1)
+                    ],
                   )
                 ),
                 new Padding(padding: new EdgeInsets.symmetric(horizontal: 3.0),),
@@ -114,6 +118,9 @@ class CodeInputState extends State<CodeInput>{
                     keyboardType: TextInputType.number,
                     validator: (val) => (val.length != 1 || int.parse(val.substring(0, 1), onError:(e) => null) == null) ? "Invalid" : null,
                     onSaved: (val) => secondNum = val,
+                    inputFormatters: [
+                      new LengthLimitingTextInputFormatter(1)
+                    ],
                   )
                 ),
                 new Padding(padding: new EdgeInsets.symmetric(horizontal: 3.0),),
@@ -125,6 +132,9 @@ class CodeInputState extends State<CodeInput>{
                     keyboardType: TextInputType.number,
                     validator: (val) => (val.length != 1 || int.parse(val.substring(0, 1), onError:(e) => null) == null) ? "Invalid" : null,
                     onSaved: (val) => thirdNum = val,
+                    inputFormatters: [
+                      new LengthLimitingTextInputFormatter(1)
+                    ],
                   )
                 ),
                 new Padding(padding: new EdgeInsets.symmetric(horizontal: 3.0),),
@@ -136,6 +146,9 @@ class CodeInputState extends State<CodeInput>{
                     keyboardType: TextInputType.number,
                     validator: (val) => (val.length != 1 || int.parse(val.substring(0, 1), onError:(e) => null) == null) ? "Invalid" : null,
                     onSaved: (val) => fourthNum = val,
+                    inputFormatters: [
+                      new LengthLimitingTextInputFormatter(1)
+                    ],
                   )
                 ),
                 new Padding(padding: new EdgeInsets.symmetric(horizontal: 3.0),),
@@ -147,6 +160,9 @@ class CodeInputState extends State<CodeInput>{
                     keyboardType: TextInputType.number,
                     validator: (val) => (val.length != 1 || int.parse(val.substring(0, 1), onError:(e) => null) == null) ? "Invalid" : null,
                     onSaved: (val) => fifthNum = val,
+                    inputFormatters: [
+                      new LengthLimitingTextInputFormatter(1)
+                    ],
                   )
                 ),
                 new Padding(padding: new EdgeInsets.symmetric(horizontal: 3.0),),
@@ -158,6 +174,9 @@ class CodeInputState extends State<CodeInput>{
                     keyboardType: TextInputType.number,
                     validator: (val) => (val.length != 1 || int.parse(val.substring(0, 1), onError:(e) => null) == null) ? "Invalid" : null,
                     onSaved: (val) => sixthNum = val,
+                    inputFormatters: [
+                      new LengthLimitingTextInputFormatter(1)
+                    ],
                   )
                 ),
                 new Padding(padding: new EdgeInsets.only(right: 3.0),),
