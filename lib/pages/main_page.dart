@@ -14,6 +14,8 @@ class HomePage extends StatefulWidget{
 
 class _HomePageState extends State<HomePage> {
 
+
+  String api_key = "AIzaSyDaTLHqDQpGuN-IOTmgbUHYRS-oRE5PM0I";
   Map<String,double> _currentLocation;
   StreamSubscription<Map<String,double>> _locationSubscription;
   Location _location = new Location();
@@ -61,26 +63,45 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context){
       // Temporary API key included in url
+
+      MediaQueryData media = MediaQuery.of(context);
+      double devicepixelratio = media.devicePixelRatio;
+      Size screensize = media.size;
+      double device_width = screensize.width * devicepixelratio ;
+      double device_height = screensize.height * devicepixelratio;
+
+      double ratio = device_height/device_width;
+
+      int true_height = 640;
+      int true_width = (640/ratio).round();
+
+      print("$device_width");
+      print("$device_height");
+      print("$true_width");
+      print("$true_height");
+
       final double lat = _currentLocation["latitude"];
       final double long = _currentLocation["longitude"];
-      image = new Image.network("https://maps.googleapis.com/maps/api/staticmap?center=$lat,$long&zoom=15&size=270x448&scale=2&key=AIzaSyDaTLHqDQpGuN-IOTmgbUHYRS-oRE5PM0I");
+      image = new Image.network("https://maps.googleapis.com/maps/api/staticmap?center=$lat,$long&zoom=15&size=${true_width}x${true_height}&scale=2&key=$api_key");
       currentWidget = !currentWidget;
 
-
+    // TODO - Stop minor overflows
     return new Material(
       child: new Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           new Stack(
-              children: <Widget>[ image,
-                                  //Do we still even want these?
-                                  // new GoToFriends(),
-                                  //new GoToChat(),
-                                ]
-          ),
-        ],)
-      );
+            children: [
+              new Container(
+                child: image,
+              )
+            ],
+            overflow: Overflow.clip
+          )
+        ]
+      )
+    );
   }
 }
 
