@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../utils/user.dart';
 
-class PhoneInput extends StatefulWidget{
-
+class PhoneInput extends StatefulWidget {
   final VoidCallback _showOverlay;
   final _formKey;
   final _page;
@@ -12,8 +11,7 @@ class PhoneInput extends StatefulWidget{
   State createState() => new PhoneInputState();
 }
 
-class PhoneInputState extends State<PhoneInput>{
-
+class PhoneInputState extends State<PhoneInput> {
   //Strings to be combined into final phonenumber
   String phoneNumber, countryCode, firstPart, secondPart, thirdPart;
 
@@ -23,7 +21,7 @@ class PhoneInputState extends State<PhoneInput>{
   //User Instance
   final User user = User.getInstance();
 
-   /* Allows for keyboard focus to be programmatically switched
+  /* Allows for keyboard focus to be programmatically switched
    * to a specific widget
    */
   final FocusNode firstInputNode = new FocusNode();
@@ -35,158 +33,218 @@ class PhoneInputState extends State<PhoneInput>{
   TextEditingController secondPartNumberControl = new TextEditingController();
 
   //Validates each field in the form
-  void submitNumber(){
+  void submitNumber() {
     FormState nameForm;
     final phoneForm = phoneFormKey.currentState;
     bool phoneVal = phoneForm.validate();
 
     //Continue if phone input is valid
-    if(phoneVal){
+    if (phoneVal) {
       phoneForm.save();
       phoneNumber = countryCode + firstPart + secondPart + thirdPart;
       phoneForm.save();
       FocusScope.of(context).requestFocus(new FocusNode());
       user.setPhone = phoneNumber;
-    
+
       //Validate name input for SignUpPage
-      if(widget._page == 1 ){
+      if (widget._page == 1) {
         nameForm = widget._formKey.currentState;
-        if(nameForm.validate()){
+        if (nameForm.validate()) {
           nameForm.save();
           widget._showOverlay();
         }
-      }
-      else{ //Only need phone number when on LoginPage
+      } else {
+        //Only need phone number when on LoginPage
         widget._showOverlay();
       }
     }
   }
 
-
   @override
-  void initState(){
+  void initState() {
     super.initState();
     //Default values of phone number
     countryCode = '+1';
     firstPart = '';
     secondPart = '';
     thirdPart = '';
-    firstPartNumberControl.addListener((){
-      if(firstPartNumberControl.text.length == 3){ FocusScope.of(context).requestFocus(secondInputNode);}
+    firstPartNumberControl.addListener(() {
+      if (firstPartNumberControl.text.length == 3) {
+        FocusScope.of(context).requestFocus(secondInputNode);
+      }
     });
-    secondPartNumberControl.addListener((){
-      if(secondPartNumberControl.text.length == 3){ FocusScope.of(context).requestFocus(thirdInputNode);}
+    secondPartNumberControl.addListener(() {
+      if (secondPartNumberControl.text.length == 3) {
+        FocusScope.of(context).requestFocus(thirdInputNode);
+      }
     });
   }
 
   //Remove controllers when state is destroyed
   @override
-  void dispose(){
+  void dispose() {
     super.dispose();
     firstPartNumberControl.dispose();
     secondPartNumberControl.dispose();
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return new Form(
       key: phoneFormKey,
       child: new Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           new Container(
-              child: new Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children:<Widget>[
-                  const Text("Country Code:", style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
-                  new Padding(padding: const EdgeInsets.symmetric(horizontal: 5.0)),
-                  new DropdownButton(
+            child: new Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Text(
+                  "Country Code:",
+                  style: const TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold),
+                ),
+                new Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                ),
+                new DropdownButton(
                   onChanged: (value) => countryCode = value,
                   items: [
                     const DropdownMenuItem(
-                      child: const Text("+1")
+                      child: const Text("+1"),
                     ),
                   ],
                 ),
-              ]
-            )
+              ],
+            ),
           ),
-          new Padding(padding: const EdgeInsets.symmetric(vertical: 5.0),),
+          new Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5.0),
+          ),
           new Row(
             children: <Widget>[
-              new Padding(padding: new EdgeInsets.only(right: 5.0),),
+              new Padding(
+                padding: new EdgeInsets.only(right: 5.0),
+              ),
               new Expanded(
                 child: new TextFormField(
                   controller: firstPartNumberControl,
-                  decoration: new InputDecoration(hintText: '555', border: new OutlineInputBorder()),
+                  decoration: new InputDecoration(
+                    hintText: '555',
+                    border: new OutlineInputBorder(),
+                  ),
                   keyboardType: TextInputType.phone,
                   validator: (val) => val.length != 3 ? 'Invalid' : null,
                   onSaved: (val) => firstPart = val,
                   inputFormatters: [
-                    new LengthLimitingTextInputFormatter(3) //First three digits of phone number
+                    new LengthLimitingTextInputFormatter(
+                        3), //First three digits of phone number
                   ],
                   focusNode: firstInputNode,
-                )
+                ),
               ),
-              new Padding(padding: new EdgeInsets.only(right: 10.0),),
+              new Padding(
+                padding: new EdgeInsets.only(right: 10.0),
+              ),
               new Expanded(
                 child: new TextFormField(
                   controller: secondPartNumberControl,
-                  decoration: new InputDecoration(hintText: '555', border: new OutlineInputBorder()),
+                  decoration: new InputDecoration(
+                    hintText: '555',
+                    border: new OutlineInputBorder(),
+                  ),
                   keyboardType: TextInputType.phone,
                   validator: (val) => val.length != 3 ? 'Invalid' : null,
                   onSaved: (val) => secondPart = val,
                   inputFormatters: [
-                    new LengthLimitingTextInputFormatter(3) //Middle three digits of phone number
+                    new LengthLimitingTextInputFormatter(
+                        3), //Middle three digits of phone number
                   ],
                   focusNode: secondInputNode,
-                )
+                ),
               ),
-              new Padding(padding: new EdgeInsets.only(right: 10.0),),
+              new Padding(
+                padding: new EdgeInsets.only(right: 10.0),
+              ),
               new Expanded(
                 child: new TextFormField(
-                  decoration: const InputDecoration(hintText: '5555', border: const OutlineInputBorder()),
+                  decoration: const InputDecoration(
+                    hintText: '5555',
+                    border: const OutlineInputBorder(),
+                  ),
                   keyboardType: TextInputType.phone,
                   validator: (val) => val.length != 4 ? 'Invalid' : null,
                   onSaved: (val) => thirdPart = val,
                   inputFormatters: [
-                    new LengthLimitingTextInputFormatter(4) //Last 4 digits of phone number 
+                    new LengthLimitingTextInputFormatter(
+                        4), //Last 4 digits of phone number
                   ],
                   focusNode: thirdInputNode,
-                )
+                ),
               ),
-              new Padding(padding: new EdgeInsets.only(right: 10.0),),
-            ],
-          ),
-          new Padding(padding: new EdgeInsets.symmetric(vertical: 10.0),),
-          (widget._page == 1) ? new Container(  //Show only Submit button if on SignUpPage
-            alignment: Alignment.center,
-            child:new FlatButton(
-            color: Colors.blueAccent,
-            child: const Text("Submit", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-            onPressed: () => submitNumber(),
-          )
-        ) : //Show Login and SignUp buttons if currently on LoginPage
-          new Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              new FlatButton.icon(
-                color: Colors.blue,
-                label: const Text("Login", style: const TextStyle(color: Colors.white),),
-                icon: const Icon(Icons.lock_open, color: Colors.white,),
-                onPressed: () => submitNumber()
-              ),
-              new Padding(padding: new EdgeInsets.symmetric(horizontal: 15.0),),
-              new FlatButton.icon(
-                color: Colors.blue,
-                label: const Text("SignUp", style: const TextStyle(color: Colors.white),),
-                icon: const Icon(Icons.person_outline, color: Colors.white,),
-                onPressed: () => Navigator.of(context).pushReplacementNamed('/signup'),
+              new Padding(
+                padding: new EdgeInsets.only(right: 10.0),
               ),
             ],
           ),
-        ]
-      )
+          new Padding(
+            padding: new EdgeInsets.symmetric(vertical: 10.0),
+          ),
+          (widget._page == 1)
+              ? new Container(
+                  //Show only Submit button if on SignUpPage
+                  alignment: Alignment.center,
+                  child: new FlatButton(
+                    color: Colors.blueAccent,
+                    child: const Text(
+                      "Submit",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onPressed: () => submitNumber(),
+                  ))
+              : //Show Login and SignUp buttons if currently on LoginPage
+              new Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    new FlatButton.icon(
+                      color: Colors.blue,
+                      label: const Text(
+                        "Login",
+                        style: const TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                      icon: const Icon(
+                        Icons.lock_open,
+                        color: Colors.white,
+                      ),
+                      onPressed: () => submitNumber(),
+                    ),
+                    new Padding(
+                      padding: new EdgeInsets.symmetric(horizontal: 15.0),
+                    ),
+                    new FlatButton.icon(
+                      color: Colors.blue,
+                      label: const Text(
+                        "SignUp",
+                        style: const TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                      icon: const Icon(
+                        Icons.person_outline,
+                        color: Colors.white,
+                      ),
+                      onPressed: () =>
+                          Navigator.of(context).pushReplacementNamed('/signup'),
+                    ),
+                  ],
+                ),
+        ],
+      ),
     );
   }
 }
